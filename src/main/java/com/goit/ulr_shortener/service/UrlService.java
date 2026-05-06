@@ -19,12 +19,16 @@ public class UrlService {
     public String shortenUrl(String longUrl) {
         Url url = new Url();
         url.setLongUrl(longUrl);
+
+        url.setShortCode(java.util.UUID.randomUUID().toString().substring(0, 8));
+
         url = urlRepository.save(url);
 
         String shortCode = encode(url.getId());
 
         url.setShortCode(shortCode);
-        return shortCode;
+
+        return "http://localhost:8080/" + shortCode;
     }
 
     public Optional<Url> getOriginalUrl(String shortCode) {
