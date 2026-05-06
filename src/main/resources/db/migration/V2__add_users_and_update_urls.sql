@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS users (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'ROLE_USER'
+    );
+
+ALTER TABLE urls ADD COLUMN expires_at TIMESTAMP WITHOUT TIME ZONE;
+ALTER TABLE urls ADD COLUMN user_id BIGINT;
+
+ALTER TABLE urls
+    ADD CONSTRAINT fk_user_id
+        FOREIGN KEY (user_id)
+            REFERENCES users (id)
+            ON DELETE CASCADE;
