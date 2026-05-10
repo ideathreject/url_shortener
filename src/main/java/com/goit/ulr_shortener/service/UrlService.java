@@ -1,11 +1,13 @@
 package com.goit.ulr_shortener.service;
 
 import com.goit.ulr_shortener.entity.Url;
+import com.goit.ulr_shortener.entity.User;
 import com.goit.ulr_shortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -16,12 +18,13 @@ public class UrlService {
     private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     @Transactional
-    public String shortenUrl(String longUrl) {
+    public String shortenUrl(String longUrl, User user) {
         Url url = new Url();
         url.setLongUrl(longUrl);
 
         url.setShortCode(java.util.UUID.randomUUID().toString().substring(0, 8));
-
+        url.setUser(user);
+        url.setExpiresAt(LocalDateTime.now().plusDays(30));
         url = urlRepository.save(url);
 
         String shortCode = encode(url.getId());
@@ -33,6 +36,7 @@ public class UrlService {
 
     public Optional<Url> getOriginalUrl(String shortCode) {
         return urlRepository.findByShortCode(shortCode)
+                .filter(url -> url.getExpiresAt() == null || url.getExpiresAt().isAfter(LocalDateTime.now()))
                 .map(url -> {
                     url.setClickCount(url.getClickCount() + 1);
                     urlRepository.save(url);
