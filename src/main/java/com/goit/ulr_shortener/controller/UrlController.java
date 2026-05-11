@@ -1,10 +1,12 @@
 package com.goit.ulr_shortener.controller;
 
+import com.goit.ulr_shortener.dto.UrlRequest;
 import com.goit.ulr_shortener.dto.UrlResponse;
 import com.goit.ulr_shortener.entity.User;
 import com.goit.ulr_shortener.service.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +26,11 @@ public class UrlController {
     @PostMapping("/api/v1/urls")
     @Operation(summary = "Create short URL", description = "Takes a long URL and gets a short URL")
     public ResponseEntity<String> shorten(
-            @RequestBody String longUrl,
+            @Valid @RequestBody UrlRequest request,
             @AuthenticationPrincipal User user
     ) {
 
-        String resultUrl = urlService.shortenUrl(longUrl, user);
+        String resultUrl = urlService.shortenUrl(request.getOriginalUrl(), user);
         return ResponseEntity.ok(resultUrl);
     }
 
