@@ -1,5 +1,6 @@
 package com.goit.ulr_shortener.service;
 
+import com.goit.ulr_shortener.dto.UrlResponse;
 import com.goit.ulr_shortener.entity.Url;
 import com.goit.ulr_shortener.entity.User;
 import com.goit.ulr_shortener.repository.UrlRepository;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -51,5 +53,28 @@ public class UrlService {
             num /= 62;
         }
         return str.toString();
+    }
+    public List<UrlResponse> getUserUrls(User user) {
+        return urlRepository.findAllByUser(user).stream()
+                .map(url -> UrlResponse.builder()
+                        .shortUrl("http://localhost:8080/" + url.getShortCode())
+                        .originalUrl(url.getLongUrl())
+                        .createdAt(url.getCreatedAt())
+                        .expiresAt(url.getExpiresAt())
+                        .clickCount(url.getClickCount())
+                        .build())
+                .toList();
+    }
+
+    public void deleteUrl(String shortCode, User user) {
+        Url url = urlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new RuntimeException("Cannot find URL"));
+
+        // Проверяем, что ссылку пытается удалить ее владелец
+        if (!url.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You dont have a access to delete URL");
+        }
+
+        urlRepository.delete(url);
     }
 }
