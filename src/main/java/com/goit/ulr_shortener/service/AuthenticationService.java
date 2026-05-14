@@ -20,6 +20,9 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        if (repository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Choose another name");
+        }
         var user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));

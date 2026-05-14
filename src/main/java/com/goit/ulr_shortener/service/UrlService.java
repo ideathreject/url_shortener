@@ -70,7 +70,6 @@ public class UrlService {
         Url url = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new RuntimeException("Cannot find URL"));
 
-        // Проверяем, что ссылку пытается удалить ее владелец
         if (!url.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("You dont have a access to delete URL");
         }
