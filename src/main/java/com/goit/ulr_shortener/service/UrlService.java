@@ -85,4 +85,16 @@ public class UrlService {
 
         urlRepository.delete(url);
     }
+    public List<UrlResponse> getActiveUserUrls(User user) {
+        return urlRepository.findAllByUser(user).stream()
+                .filter(url -> url.getExpiresAt() == null || url.getExpiresAt().isAfter(LocalDateTime.now()))
+                .map(url -> UrlResponse.builder()
+                        .shortUrl("http://localhost:8080/" + url.getShortCode())
+                        .originalUrl(url.getLongUrl())
+                        .createdAt(url.getCreatedAt())
+                        .expiresAt(url.getExpiresAt())
+                        .clickCount(url.getClickCount())
+                        .build())
+                .toList();
+    }
 }

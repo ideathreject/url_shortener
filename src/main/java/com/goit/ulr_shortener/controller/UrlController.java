@@ -48,6 +48,11 @@ public class UrlController {
     public ResponseEntity<List<UrlResponse>> getMyUrls(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(urlService.getUserUrls(user));
     }
+    @GetMapping("/api/v1/urls/my/active")
+    @Operation(summary = "My links", description = "Returns a list of ACTIVE links for the current user with statistics")
+    public ResponseEntity<List<UrlResponse>> getMyActiveUrls(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(urlService.getActiveUserUrls(user));
+    }
 
     @DeleteMapping("/api/v1/urls/{shortCode}")
     @Operation(summary = "Delete link", description = "Remove a link (for owner only)")
@@ -58,4 +63,5 @@ public class UrlController {
         urlService.deleteUrl(shortCode, user);
         return ResponseEntity.noContent().build();
     }
+
 }
