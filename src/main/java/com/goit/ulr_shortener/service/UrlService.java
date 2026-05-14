@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -18,21 +19,36 @@ public class UrlService {
 
     private final UrlRepository urlRepository;
     private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private final SecureRandom random = new SecureRandom();
+
+    private String generateShortCode() {
+
+        int length = 6 + random.nextInt(3);
+        StringBuilder code = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            code.append(ALPHABET.charAt(random.nextInt(ALPHABET.length())));
+        }
+
+        String result = code.toString();
+
+        if (urlRepository.findByShortCode(result).isPresent()) {
+            return generateShortCode();
+        }
+
+        return result;
+    }
 
     @Transactional
     public String shortenUrl(String longUrl, User user) {
+        String shortCode = generateShortCode();
         Url url = new Url();
         url.setLongUrl(longUrl);
-
-        url.setShortCode(java.util.UUID.randomUUID().toString().substring(0, 8));
+        url.setShortCode(shortCode);
         url.setUser(user);
         url.setExpiresAt(LocalDateTime.now().plusDays(30));
-        url = urlRepository.save(url);
 
-        String shortCode = encode(url.getId());
-
-        url.setShortCode(shortCode);
-
+        urlRepository.save(url);
         return "http://localhost:8080/" + shortCode;
     }
 
@@ -46,14 +62,7 @@ public class UrlService {
                 });
     }
 
-    private String encode(long num) {
-        StringBuilder str = new StringBuilder();
-        while (num > 0) {
-            str.insert(0, ALPHABET.charAt((int) (num % 62)));
-            num /= 62;
-        }
-        return str.toString();
-    }
+
     public List<UrlResponse> getUserUrls(User user) {
         return urlRepository.findAllByUser(user).stream()
                 .map(url -> UrlResponse.builder()
