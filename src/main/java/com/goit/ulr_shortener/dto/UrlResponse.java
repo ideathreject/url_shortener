@@ -2,6 +2,7 @@ package com.goit.ulr_shortener.dto;
 
 import lombok.Builder;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "URL Shortener API", description = "API для сокращения ссылок", version = "1.0"),
+        info = @Info(title = "URL Shortener API", description = "API for creating short URL from long URL", version = "1.0"),
         security = @SecurityRequirement(name = "Bearer Authentication")
 )
 @SecurityScheme(

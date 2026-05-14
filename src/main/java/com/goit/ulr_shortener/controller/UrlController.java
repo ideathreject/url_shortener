@@ -2,6 +2,7 @@ package com.goit.ulr_shortener.controller;
 
 import com.goit.ulr_shortener.dto.UrlRequest;
 import com.goit.ulr_shortener.dto.UrlResponse;
+import com.goit.ulr_shortener.entity.Url;
 import com.goit.ulr_shortener.entity.User;
 import com.goit.ulr_shortener.service.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,18 +38,21 @@ public class UrlController {
 
     @GetMapping("/{shortCode}")
     @Operation(summary = "Redirect to origin URL", description = "URL Redirect user to saved long URL")
-    public ResponseEntity<?> redirectToOriginal(@PathVariable String shortCode) {
-        return urlService.getOriginalUrl(shortCode)
-                .map(url -> ResponseEntity.status(HttpStatus.FOUND)
-                        .location(URI.create(url.getLongUrl()))
-                        .build())
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Void> redirectToOriginal(@PathVariable String shortCode) {
+        Optional<Url> optionalUrl = urlService.getOriginalUrl(shortCode);
+
+        return optionalUrl.<ResponseEntity<Void>>map(url -> ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(url.getLongUrl()))
+                .build()).orElseGet(() -> ResponseEntity.notFound().build());
+
     }
+
     @GetMapping("/api/v1/urls/my")
     @Operation(summary = "My links", description = "Returns a list of links for the current user with statistics")
     public ResponseEntity<List<UrlResponse>> getMyUrls(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(urlService.getUserUrls(user));
     }
+
     @GetMapping("/api/v1/urls/my/active")
     @Operation(summary = "My links", description = "Returns a list of ACTIVE links for the current user with statistics")
     public ResponseEntity<List<UrlResponse>> getMyActiveUrls(@AuthenticationPrincipal User user) {

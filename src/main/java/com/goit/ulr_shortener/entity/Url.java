@@ -3,10 +3,11 @@ package com.goit.ulr_shortener.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "urls") // Связываем класс с таблицей из нашей миграции
+@Table(name = "urls")
 @Getter
 @Setter
 public class Url {
