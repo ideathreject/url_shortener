@@ -33,8 +33,7 @@ public class UrlController {
             @AuthenticationPrincipal User user
     ) {
 
-        String resultUrl = urlService.shortenUrl(request.getOriginalUrl(), user);
-        return ResponseEntity.ok(resultUrl);
+        return ResponseEntity.ok(urlService.shortenUrl(request, user));
     }
 
     @GetMapping("/{shortCode}")
@@ -69,6 +68,7 @@ public class UrlController {
         urlService.deleteUrl(shortCode, user);
         return ResponseEntity.noContent().build();
     }
+
     @PatchMapping("/api/v1/urls/{shortCode}")
     @Operation(summary = "Update link", description = "Change ogirin URL(for owner only)")
     public ResponseEntity<UrlResponse> updateUrl(

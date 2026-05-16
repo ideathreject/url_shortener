@@ -1,5 +1,6 @@
 package com.goit.ulr_shortener.service;
 
+import com.goit.ulr_shortener.dto.UrlRequest;
 import com.goit.ulr_shortener.dto.UrlResponse;
 import com.goit.ulr_shortener.dto.UrlUpdateRequest;
 import com.goit.ulr_shortener.entity.Url;
@@ -44,13 +45,17 @@ public class UrlService {
     }
 
     @Transactional
-    public String shortenUrl(String longUrl, User user) {
+    public String shortenUrl(UrlRequest request, User user) {
         String shortCode = generateShortCode();
         Url url = new Url();
-        url.setLongUrl(longUrl);
+        url.setLongUrl(request.getOriginalUrl());
         url.setShortCode(shortCode);
         url.setUser(user);
-        url.setExpiresAt(LocalDateTime.now().plusDays(30));
+        if (request.getExpireAt() != null) {
+            url.setExpiresAt(request.getExpireAt());
+        } else {
+            url.setExpiresAt(LocalDateTime.now().plusDays(30));
+        }
 
         urlRepository.save(url);
         return URL + shortCode;
