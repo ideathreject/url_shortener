@@ -62,7 +62,7 @@ public class UrlServiceImpl implements UrlService {
         }
 
         urlRepository.save(url);
-        return this.baseUrl + shortCode;
+        return buildFullUrl(shortCode);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class UrlServiceImpl implements UrlService {
     public List<UrlResponse> getUserUrls(User user) {
         return urlRepository.findAllByUser(user).stream()
                 .map(url -> UrlResponse.builder()
-                        .shortUrl(this.baseUrl + url.getShortCode())
+                        .shortUrl(buildFullUrl(url.getShortCode()))
                         .originalUrl(url.getLongUrl())
                         .createdAt(url.getCreatedAt())
                         .expiresAt(url.getExpiresAt())
@@ -107,7 +107,7 @@ public class UrlServiceImpl implements UrlService {
         return urlRepository.findAllByUser(user).stream()
                 .filter(url -> url.getExpiresAt() == null || url.getExpiresAt().isAfter(LocalDateTime.now()))
                 .map(url -> UrlResponse.builder()
-                        .shortUrl(this.baseUrl + url.getShortCode())
+                        .shortUrl(buildFullUrl(url.getShortCode()))
                         .originalUrl(url.getLongUrl())
                         .createdAt(url.getCreatedAt())
                         .expiresAt(url.getExpiresAt())
@@ -131,12 +131,18 @@ public class UrlServiceImpl implements UrlService {
         urlRepository.save(url);
 
         return UrlResponse.builder()
-                .shortUrl(this.baseUrl + url.getShortCode())
+                .shortUrl(buildFullUrl(shortCode))
                 .originalUrl(url.getLongUrl())
                 .createdAt(url.getCreatedAt())
                 .expiresAt(url.getExpiresAt())
                 .clickCount(url.getClickCount())
                 .build();
+    }
+    private String buildFullUrl(String shortCode) {
+        if (baseUrl.endsWith("/")) {
+            return baseUrl + shortCode;
+        }
+        return baseUrl + "/" + shortCode;
     }
 
 }
