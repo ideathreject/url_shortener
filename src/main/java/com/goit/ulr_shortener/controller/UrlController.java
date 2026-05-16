@@ -2,6 +2,7 @@ package com.goit.ulr_shortener.controller;
 
 import com.goit.ulr_shortener.dto.UrlRequest;
 import com.goit.ulr_shortener.dto.UrlResponse;
+import com.goit.ulr_shortener.dto.UrlUpdateRequest;
 import com.goit.ulr_shortener.entity.Url;
 import com.goit.ulr_shortener.entity.User;
 import com.goit.ulr_shortener.service.UrlService;
@@ -67,6 +68,15 @@ public class UrlController {
     ) {
         urlService.deleteUrl(shortCode, user);
         return ResponseEntity.noContent().build();
+    }
+    @PatchMapping("/api/v1/urls/{shortCode}")
+    @Operation(summary = "Update link", description = "Change ogirin URL(for owner only)")
+    public ResponseEntity<UrlResponse> updateUrl(
+            @PathVariable String shortCode,
+            @Valid @RequestBody UrlUpdateRequest request,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(urlService.updateUrl(shortCode, request, user));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.goit.ulr_shortener.service;
 
 import com.goit.ulr_shortener.dto.UrlResponse;
+import com.goit.ulr_shortener.dto.UrlUpdateRequest;
 import com.goit.ulr_shortener.entity.Url;
 import com.goit.ulr_shortener.entity.User;
 import com.goit.ulr_shortener.repository.UrlRepository;
@@ -101,4 +102,27 @@ public class UrlService {
                         .build())
                 .toList();
     }
+    public UrlResponse updateUrl(String shortCode, UrlUpdateRequest request, User user) {
+        Url url = urlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new IllegalArgumentException("cannot find short code"));
+
+        if (!url.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("you dont have access to update this URL");
+        }
+
+        if (request.getOriginalUrl() != null && !request.getOriginalUrl().isBlank()) {
+            url.setLongUrl(request.getOriginalUrl());
+        }
+
+        urlRepository.save(url);
+
+        return UrlResponse.builder()
+                .shortUrl(URL + url.getShortCode())
+                .originalUrl(url.getLongUrl())
+                .createdAt(url.getCreatedAt())
+                .expiresAt(url.getExpiresAt())
+                .clickCount(url.getClickCount())
+                .build();
+    }
+
 }
