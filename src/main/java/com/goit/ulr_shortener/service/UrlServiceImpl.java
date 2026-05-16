@@ -7,6 +7,7 @@ import com.goit.ulr_shortener.entity.Url;
 import com.goit.ulr_shortener.entity.User;
 import com.goit.ulr_shortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,8 @@ public class UrlServiceImpl implements UrlService {
 
     private final UrlRepository urlRepository;
     private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final String URL = "http://localhost:8080/";
+    @Value("${app.base-url}")
+    private String baseUrl;
     private final SecureRandom random = new SecureRandom();
 
     @Override
@@ -60,7 +62,7 @@ public class UrlServiceImpl implements UrlService {
         }
 
         urlRepository.save(url);
-        return URL + shortCode;
+        return this.baseUrl + shortCode;
     }
 
     @Override
@@ -79,7 +81,7 @@ public class UrlServiceImpl implements UrlService {
     public List<UrlResponse> getUserUrls(User user) {
         return urlRepository.findAllByUser(user).stream()
                 .map(url -> UrlResponse.builder()
-                        .shortUrl(URL + url.getShortCode())
+                        .shortUrl(this.baseUrl + url.getShortCode())
                         .originalUrl(url.getLongUrl())
                         .createdAt(url.getCreatedAt())
                         .expiresAt(url.getExpiresAt())
@@ -105,7 +107,7 @@ public class UrlServiceImpl implements UrlService {
         return urlRepository.findAllByUser(user).stream()
                 .filter(url -> url.getExpiresAt() == null || url.getExpiresAt().isAfter(LocalDateTime.now()))
                 .map(url -> UrlResponse.builder()
-                        .shortUrl(URL + url.getShortCode())
+                        .shortUrl(this.baseUrl + url.getShortCode())
                         .originalUrl(url.getLongUrl())
                         .createdAt(url.getCreatedAt())
                         .expiresAt(url.getExpiresAt())
@@ -129,7 +131,7 @@ public class UrlServiceImpl implements UrlService {
         urlRepository.save(url);
 
         return UrlResponse.builder()
-                .shortUrl(URL + url.getShortCode())
+                .shortUrl(this.baseUrl + url.getShortCode())
                 .originalUrl(url.getLongUrl())
                 .createdAt(url.getCreatedAt())
                 .expiresAt(url.getExpiresAt())
