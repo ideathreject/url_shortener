@@ -8,6 +8,7 @@ import com.goit.ulr_shortener.entity.User;
 import com.goit.ulr_shortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,31 +39,37 @@ public class UrlServiceImpl implements UrlService {
             code.append(ALPHABET.charAt(random.nextInt(ALPHABET.length())));
         }
 
-        String result = code.toString();
-
-        if (urlRepository.findByShortCode(result).isPresent()) {
-            return generateShortCode();
-        }
-
-        return result;
+        return code.toString();
     }
 
     @Transactional
     @Override
     public String shortenUrl(UrlRequest request, User user) {
-        String shortCode = generateShortCode();
-        Url url = new Url();
-        url.setLongUrl(request.getOriginalUrl());
-        url.setShortCode(shortCode);
-        url.setUser(user);
-        if (request.getExpireAt() != null) {
-            url.setExpiresAt(request.getExpireAt());
-        } else {
-            url.setExpiresAt(LocalDateTime.now().plusDays(30));
-        }
+        int maxTry = 100;
 
-        urlRepository.save(url);
-        return buildFullUrl(shortCode);
+        for (int i = 1; i <= maxTry; i++) {
+            String shortCode = generateShortCode();
+            Url url = new Url();
+            url.setLongUrl(request.getOriginalUrl());
+            url.setShortCode(shortCode);
+            url.setUser(user);
+
+            if (request.getExpireAt() != null) {
+                url.setExpiresAt(request.getExpireAt());
+            } else {
+                url.setExpiresAt(LocalDateTime.now().plusDays(30));
+            }
+            try {
+                urlRepository.saveAndFlush(url);
+                return buildFullUrl(shortCode);
+
+            } catch (DataIntegrityViolationException e) {
+                if (i == maxTry) {
+                    throw new IllegalStateException("Cannot create unique code after " + maxTry + " tries");
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -115,6 +122,7 @@ public class UrlServiceImpl implements UrlService {
                         .build())
                 .toList();
     }
+
     @Override
     public UrlResponse updateUrl(String shortCode, UrlUpdateRequest request, User user) {
         Url url = urlRepository.findByShortCode(shortCode)
@@ -138,6 +146,7 @@ public class UrlServiceImpl implements UrlService {
                 .clickCount(url.getClickCount())
                 .build();
     }
+
     private String buildFullUrl(String shortCode) {
         if (baseUrl.endsWith("/")) {
             return baseUrl + shortCode;
