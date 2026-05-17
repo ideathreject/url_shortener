@@ -75,10 +75,9 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public Optional<Url> getOriginalUrl(String shortCode) {
         return urlRepository.findByShortCode(shortCode)
-                .filter(url -> url.getExpiresAt() == null || url.getExpiresAt().isAfter(LocalDateTime.now()))
                 .map(url -> {
+                    urlRepository.incrementClickCount(shortCode);
                     url.setClickCount(url.getClickCount() + 1);
-                    urlRepository.save(url);
                     return url;
                 });
     }
