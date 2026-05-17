@@ -3,9 +3,11 @@ package com.goit.ulr_shortener.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class RegisterRequest {
 
     @NotBlank(message = "Username must be not blank")
