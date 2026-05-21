@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -17,5 +17,5 @@ public class UrlRequest {
     private String originalUrl;
 
     @Future(message = " Incorrect date")
-    private LocalDateTime expireAt;
+    private Instant expireAt;
 }

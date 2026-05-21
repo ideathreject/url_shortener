@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +58,7 @@ public class UrlServiceImpl implements UrlService {
             if (request.getExpireAt() != null) {
                 url.setExpiresAt(request.getExpireAt());
             } else {
-                url.setExpiresAt(LocalDateTime.now().plusDays(30));
+                url.setExpiresAt(Instant.now().plus(30, ChronoUnit.DAYS));
             }
             try {
                 urlRepository.saveAndFlush(url);
@@ -111,7 +112,7 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public List<UrlResponse> getActiveUserUrls(User user) {
         return urlRepository.findAllByUser(user).stream()
-                .filter(url -> url.getExpiresAt() == null || url.getExpiresAt().isAfter(LocalDateTime.now()))
+                .filter(url -> url.getExpiresAt() == null || url.getExpiresAt().isAfter(Instant.now()))
                 .map(url -> UrlResponse.builder()
                         .shortUrl(buildFullUrl(url.getShortCode()))
                         .originalUrl(url.getLongUrl())
