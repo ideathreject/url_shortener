@@ -1,5 +1,6 @@
 package com.goit.ulr_shortener.service;
 
+import com.goit.ulr_shortener.dto.CreateUrlResponse;
 import com.goit.ulr_shortener.dto.UrlRequest;
 import com.goit.ulr_shortener.dto.UrlResponse;
 import com.goit.ulr_shortener.dto.UrlUpdateRequest;
@@ -45,7 +46,7 @@ public class UrlServiceImpl implements UrlService {
 
     @Transactional
     @Override
-    public String shortenUrl(UrlRequest request, User user) {
+    public CreateUrlResponse shortenUrl(UrlRequest request, User user) {
         int maxTry = 100;
 
         for (int i = 1; i <= maxTry; i++) {
@@ -62,7 +63,10 @@ public class UrlServiceImpl implements UrlService {
             }
             try {
                 urlRepository.saveAndFlush(url);
-                return buildFullUrl(shortCode);
+                return CreateUrlResponse.builder().shortUrl(buildFullUrl(shortCode))
+                        .originalUrl(url.getLongUrl())
+                        .expiresAt(url.getExpiresAt())
+                        .build();
 
             } catch (DataIntegrityViolationException e) {
                 if (i == maxTry) {

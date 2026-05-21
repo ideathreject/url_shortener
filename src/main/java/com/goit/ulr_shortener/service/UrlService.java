@@ -1,5 +1,6 @@
 package com.goit.ulr_shortener.service;
 
+import com.goit.ulr_shortener.dto.CreateUrlResponse;
 import com.goit.ulr_shortener.dto.UrlRequest;
 import com.goit.ulr_shortener.dto.UrlResponse;
 import com.goit.ulr_shortener.dto.UrlUpdateRequest;
@@ -14,7 +15,7 @@ public interface UrlService {
     String generateShortCode();
 
     @Transactional
-    String shortenUrl(UrlRequest request, User user);
+    CreateUrlResponse shortenUrl(UrlRequest request, User user);
 
     Optional<Url> getOriginalUrl(String shortCode);
 
