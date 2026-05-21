@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.goit'
 version = '0.0.1-SNAPSHOT'
-description = 'ulr_shortener'
+description = 'url_shortener'
 
 java {
     toolchain {
