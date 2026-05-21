@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.CacheResponse;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +34,7 @@ public class UrlController {
             @AuthenticationPrincipal User user
     ) {
 
-        return ResponseEntity.ok(urlService.shortenUrl(request, user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(urlService.shortenUrl(request, user));
     }
 
     @GetMapping("/{shortCode}")
