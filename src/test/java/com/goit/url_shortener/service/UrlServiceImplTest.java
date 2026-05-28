@@ -1,4 +1,4 @@
-package com.goit.url_shortener;
+package com.goit.url_shortener.service;
 
 import com.goit.url_shortener.dto.CreateUrlResponse;
 import com.goit.url_shortener.dto.UrlRequest;
@@ -7,7 +7,6 @@ import com.goit.url_shortener.dto.UrlUpdateRequest;
 import com.goit.url_shortener.entity.Url;
 import com.goit.url_shortener.entity.User;
 import com.goit.url_shortener.repository.UrlRepository;
-import com.goit.url_shortener.service.UrlServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
