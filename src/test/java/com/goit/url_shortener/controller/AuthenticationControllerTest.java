@@ -40,7 +40,7 @@ class AuthenticationControllerTest {
         ResponseEntity<AuthenticationResponse> response = authenticationController.register(request);
 
         assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(mockResponse, response.getBody());
 
         verify(authenticationService, times(1)).register(request);
