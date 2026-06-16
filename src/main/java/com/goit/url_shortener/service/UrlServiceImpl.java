@@ -80,7 +80,7 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public Optional<Url> getOriginalUrl(String shortCode) {
         return urlRepository.findByShortCode(shortCode)
-                .map(url -> {
+                .filter(url -> url.getExpiresAt() == null || !url.getExpiresAt().isBefore(Instant.now())).map(url -> {
                     urlRepository.incrementClickCount(shortCode);
                     return url;
                 });
