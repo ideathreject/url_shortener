@@ -140,6 +140,14 @@ public class UrlServiceImpl implements UrlService {
             url.setLongUrl(request.getOriginalUrl());
         }
 
+        if (request.getOriginalUrl() != null && !request.getOriginalUrl().isBlank()) {
+            url.setLongUrl(request.getOriginalUrl());
+        }
+
+        if (request.getExpiresAt() != null) {
+            url.setExpiresAt(request.getExpiresAt());
+        }
+
         urlRepository.save(url);
 
         return UrlResponse.builder()
