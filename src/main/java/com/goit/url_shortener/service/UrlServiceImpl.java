@@ -82,7 +82,6 @@ public class UrlServiceImpl implements UrlService {
         return urlRepository.findByShortCode(shortCode)
                 .map(url -> {
                     urlRepository.incrementClickCount(shortCode);
-                    url.setClickCount(url.getClickCount() + 1);
                     return url;
                 });
     }
