@@ -24,7 +24,7 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=your_db_password
 
 # Security Configuration (Minimum 256-bit / 32 characters long)
-JWT_SECRET=your_password
+JWT_SECRET=ZGVmYXVsdFNlY3JldEtleUZvckp3dFRva2VuR2VuZXJhdGlvblZlcnlTZWN1cmU=
 ```
 ## 🚀 Running with Docker Compose
 
