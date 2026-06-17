@@ -30,7 +30,7 @@ class GlobalExceptionHandlerTest {
         NoSuchElementException ex = new NoSuchElementException("Not found");
         ResponseEntity<ErrorResponse> response = exceptionHandler.handleNotFound(ex);
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Not found", response.getBody().getMessage());
     }
